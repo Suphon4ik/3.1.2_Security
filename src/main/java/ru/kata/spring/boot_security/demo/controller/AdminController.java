@@ -1,12 +1,15 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Controller
@@ -71,14 +74,20 @@ public class AdminController {
 
     @PostMapping("/delete")
     public String deleteUser(@RequestParam Long id) {
-        userService.delete(id);
+        Optional<User> user = userService.findById(id);
+        user.ifPresent(value -> userService.delete(value.getId()));
         logger.info("deleteUser method in AdminController");
         return "redirect:/admin";
     }
 
     @GetMapping("/user/{id}")
     public String findUserById(@PathVariable Long id, Model model) {
-        model.addAttribute("user", userService.findById(id));
+        Optional<User> optionalUser = userService.findById(id);
+        if (optionalUser.isPresent()) {
+            model.addAttribute("user", optionalUser.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+        }
         logger.info("getUser called in AdminController and it almost done");
         return "user/user";
     }

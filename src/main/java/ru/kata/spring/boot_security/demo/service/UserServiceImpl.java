@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             Set<Role> userRoles = new HashSet<>();
-            userRoles.add(roleService.findRoleByName(Role.defaultRoleName));
+            userRoles.add(roleService.findByName(Role.defaultRoleName));
             user.setRoles(userRoles);
         }
         userRepository.save(user);
@@ -64,12 +64,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findById(Long id) {
-        logger.info("findById was called in UserServiceImpl");
-        return userRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "User not found, id = " + id));
+    public Optional<User> findById(Long id) {
+        return Optional.ofNullable(userRepository
+                .findById(id)  // Optional<User>
+                .orElseThrow(() -> new EntityNotFoundException("User not found, id = " + id)));
+        // Возвращается User (не Optional)
     }
 
     @Override
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public List<Role> getAllRoles() {
-        return roleService.getAllRoles();
+        return roleService.findAll();
     }
 
     @Override
@@ -138,7 +137,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         "User not found, id = " + userId));
         Map<String, Object> model = new HashMap<>();
         model.put("user", user);
-        model.put("allRoles", roleService.getAllRoles());
+        model.put("allRoles", roleService.findAll());
         return model;
     }
 
@@ -146,11 +145,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         logger.info("getRolesSetByUserName was called in UserServiceImpl");
         Set<Role> userRoles = new HashSet<>();
         if (roleNames != null && !roleNames.isEmpty()) {
-            userRoles = roleNames.stream().map(roleService::findRoleByName)
+            userRoles = roleNames.stream().map(roleService::findByName)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         } else {
-            userRoles.add(roleService.findRoleByName(Role.defaultRoleName));
+            userRoles.add(roleService.findByName(Role.defaultRoleName));
         }
         return userRoles;
     }

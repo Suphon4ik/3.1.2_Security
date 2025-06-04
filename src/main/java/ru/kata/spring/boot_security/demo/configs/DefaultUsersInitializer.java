@@ -27,8 +27,8 @@ public class DefaultUsersInitializer {
                 Role roleAdmin = new Role("ROLE_ADMIN");
                 Role roleUser = new Role("ROLE_USER");
 
-                roleService.saveRole(roleAdmin);
-                roleService.saveRole(roleUser);
+                roleService.save(roleAdmin);
+                roleService.save(roleUser);
 
                 User admin = new User("admin", "admin", 20, "admin@admin.com");
                 admin.setPassword("admin");

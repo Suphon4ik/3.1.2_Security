@@ -24,26 +24,28 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> getAllRoles() {
+    @Transactional(readOnly = true)
+    public List<Role> findAll() {
         return roleRepository.findAll();
     }
 
     @Override
-    public void saveRole(Role role) {
+    @Transactional(readOnly = true)
+    public void save(Role role) {
         roleRepository.save(role);
         logger.info("role saved in RoleServiceImpl");
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Role findRoleByName(String roleName) {
+    public Role findByName(String roleName) {
         logger.info("findRoleByName was called in RoleServiceImpl");
         return roleRepository.findByName(roleName);
     }
 
     public Set<Role> getDefaultRolesSet() {
         Set<Role> roles = new HashSet<>();
-        roles.add(this.findRoleByName(Role.defaultRoleName));
+        roles.add(this.findByName(Role.defaultRoleName));
         return roles;
     }
 
@@ -55,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
         } else {
             roles = new HashSet<>();
             for (String roleName : roleNames) {
-                Optional<Role> role = Optional.ofNullable(this.findRoleByName(roleName));
+                Optional<Role> role = Optional.ofNullable(this.findByName(roleName));
                 if (role.isPresent()) {
                     roles.add(role.get());
                 } else {

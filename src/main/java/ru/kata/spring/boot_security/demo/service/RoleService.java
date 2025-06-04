@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 public interface RoleService {
-    List<Role> getAllRoles();
-
-    void saveRole(Role role);
-
-    Role findRoleByName(String roleName);
+    List<Role> findAll();
+    void save(Role role);
+    Role findByName(String name);
 
     Set<Role> getRolesSetByUserName(Set<Role> userRoles, List<String> roleNames);
 }

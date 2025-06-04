@@ -6,6 +6,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserService {
     List<User> findAll();
@@ -16,7 +17,7 @@ public interface UserService {
 
     void delete(Long id);
 
-    User findById(Long id);
+    Optional<User> findById(Long id);
 
     void saveUserWithRoles(User user, String password, List<String> roleNames);
 
